@@ -1,0 +1,4 @@
+interface:
+  display_name: "Stata LaTeX Tables"
+  short_description: "Opinionated Stata-to-LaTeX table workflows."
+  default_prompt: "Use $stata-latex-tables to write or review opinionated Stata-to-LaTeX table workflows with esttab, estadd, panel tables, and balance tables."

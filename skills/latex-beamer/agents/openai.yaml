@@ -1,0 +1,4 @@
+interface:
+  display_name: "LaTeX Beamer"
+  short_description: "Personal crimson Beamer slide templates."
+  default_prompt: "Use $latex-beamer to create or revise my crimson economics Beamer slides with appendix buttons, input tables, configured figures, and biblatex references."

@@ -1,0 +1,10 @@
+version: 1
+agents:
+  - id: openai
+    name: OpenAI
+    skills:
+      - latex-paper-templates
+prompt: |
+  Use $latex-paper-templates to create or revise my opinionated economics paper
+  LaTeX template with natbib, AER references, threeparttable tables, input-based
+  table fragments, captions, and figure configuration.

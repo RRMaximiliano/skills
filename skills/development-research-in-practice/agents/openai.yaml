@@ -1,0 +1,4 @@
+interface:
+  display_name: "Development Research in Practice"
+  short_description: "DIME-style Stata-first research data workflows."
+  default_prompt: "Use $development-research-in-practice to structure, write, or review Stata-first development research code using DIME Analytics practices."
