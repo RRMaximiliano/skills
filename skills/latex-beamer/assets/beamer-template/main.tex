@@ -1,108 +1,52 @@
-\documentclass[aspectratio=169,11pt]{beamer}
+\documentclass[t,11pt]{beamer}
+% For an explicitly requested widescreen deck, use:
+% \documentclass[t,11pt,aspectratio=169]{beamer}
 
-% Harvard crimson palette. Define before slides_updated.
-\definecolor{accent}{HTML}{A51C30}
-\definecolor{accent2}{HTML}{1E1E1E}
-\definecolor{harvardcrimson}{HTML}{A51C30}
-\definecolor{harvarddark}{HTML}{8C1515}
-\definecolor{harvardslate}{HTML}{293352}
-
-\usepackage{slides_updated,math}
-
-\graphicspath{{Figures/}{../Figures/}}
-\addbibresource{cites.bib}
-
-% Extra packages used in empirical decks
-\usepackage{multirow}
-\usepackage[flushleft]{threeparttable}
-\usepackage{threeparttablex}
-\usepackage{comment}
-\usepackage{varwidth}
-
-% Stata significance stars
-\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
-
-% Column types used in input tables
-\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
-\newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}}
-
-% Captions
-\usepackage[skip=0pt]{caption}
-\DeclareCaptionLabelFormat{AppendixTables}{A.#2}
-\DeclareCaptionFormat{myformat}{%
-  \begin{varwidth}{\linewidth}%
-    \centering
-    #1#2#3%
-  \end{varwidth}%
-}
-\captionsetup{format=myformat}
-
-\title{Presentation Title}
-\author{Author Name}
-\date{\today}
+\input{metadata}
+\input{preamble}
+% For a short deck without automatic section outlines, uncomment:
+% \sectionoutlinesfalse
 
 \begin{document}
 
-\begin{frame}[plain]
+\begin{frame}[plain,noframenumbering]
   \titlepage
 \end{frame}
 
-\begin{frame}\label{motivation}
-\frametitle{Motivation}
-\begin{itemize}
-  \item Main empirical motivation.
-  \item Link to appendix detail. {\hyperlink{appendix:detail}{\beamergotobutton{Detail}}}
-\end{itemize}
-\end{frame}
+\input{Sections/01_opening}
+\input{Sections/02_background}
+\input{Sections/03_conceptual_framework}
+\input{Sections/04_data_strategy}
+\input{Sections/05_results}
+\input{Sections/06_mechanisms}
+\input{Sections/07_additional_outcomes}
+\input{Sections/08_conclusion}
 
-\begin{frame}\label{main:results}
-\frametitle{Main Result}
-\begin{figure}
-\centering
-\IfFileExists{Figures/example-figure.pdf}{%
-  \includegraphics[width=.75\textwidth]{example-figure.pdf}%
-}{%
-  \fbox{\parbox[c][1.8in][c]{.7\textwidth}{\centering Replace with Figures/example-figure.pdf}}%
-}
-\end{figure}
-\bottomleft{
-  \hyperlink{appendix:results-table}{\beamergotobutton{Table}}
-}
-\end{frame}
+% Automatic section outlines end before references and appendix.
+\sectionoutlinesfalse
 
-\begin{transitionframe}
-Additional Results
-\end{transitionframe}
+\ifshowbibliography
+  % Use an ordinary frame when the bibliography fits on one slide.
+  % For a long bibliography, add [allowframebreaks] and title the frame
+  % {References \insertcontinuationcountroman}.
+  \begin{frame}{References}
+    \bibliographystyle{aer}
+    \bibliography{references}
+  \end{frame}
+\else
+  \begin{frame}{References}
+    \centering
+    \vfill
+    Add only verified bibliography entries and citations.
+    \vfill
+  \end{frame}
+\fi
 
 \appendix
-
-\begin{frame}\label{appendix:detail}
-\frametitle{Appendix Detail}
-\begin{itemize}
-  \item Supporting detail for the motivation slide.
-\end{itemize}
-\bottomleft{\hyperlink{motivation}{\beamerreturnbutton{Return to motivation}}}
-\end{frame}
-
-\begin{frame}\label{appendix:results-table}
-\frametitle{Main Result Table}
-\vspace*{-.5cm}
-\begin{table}[H]
-\centering
-\adjustbox{max width=.8\textwidth}{%
-\begin{threeparttable}
-\caption{Example table}
-\label{tab:example}
-\input{Tables/example-table}
-\end{threeparttable}
-}
-\end{table}
-\bottomleft{\hyperlink{main:results}{\beamerreturnbutton{Return to results}}}
-\end{frame}
-
-% Add only when a references slide is needed.
-% \begin{frame}[allowframebreaks]{References}
-% \printbibliography
-% \end{frame}
+% Appendix navigation is intentionally unnumbered; main-deck totals remain stable.
+\setbeamertemplate{footline}{}
+\input{Appendices/A_data}
+\input{Appendices/B_identification}
+\input{Appendices/C_additional_results}
 
 \end{document}

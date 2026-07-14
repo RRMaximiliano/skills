@@ -19,6 +19,7 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{adjustbox}
+\usepackage{etoolbox}
 \usepackage[flushleft]{threeparttable}
 \usepackage[skip=0pt,labelfont=bf]{caption}
 \usepackage{varwidth}
@@ -56,8 +57,21 @@
   \end{varwidth}%
 }
 \captionsetup{justification=centering}
-\AtBeginDocument{\captionsetup[table]{format=myformat}}
-\AtBeginDocument{\captionsetup[figure]{format=myformat}}
+\AtBeginDocument{\captionsetup[table]{format=myformat,skip=0pt}}
+\AtBeginDocument{\captionsetup[figure]{format=myformat,skip=0pt}}
+
+% threeparttable otherwise adds its own 0.2\baselineskip below a caption.
+% Remove that internal gap so skip=0pt reaches the table's top rule.
+\makeatletter
+\patchcmd{\TPT@measurement}
+  {\TPT@docapt \vskip.2\baselineskip}
+  {\TPT@docapt \vskip0pt}
+  {}{}
+\patchcmd{\TPT@tabargset}
+  {\TPT@docapt \vskip.2\baselineskip}
+  {\TPT@docapt \vskip0pt}
+  {}{}
+\makeatother
 
 \newcommand\fnote[1]{%
   {%

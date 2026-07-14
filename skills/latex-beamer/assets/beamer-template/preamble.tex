@@ -1,0 +1,39 @@
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage[default]{lato}
+\usepackage{microtype}
+\usepackage{ragged2e}
+\usepackage{setspace}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{adjustbox}
+\usepackage[flushleft]{threeparttable}
+\usepackage[compatibility=false,skip=0pt]{caption}
+
+\usepackage[authoryear,round]{natbib}
+\usepackage{appendixnumberbeamer}
+\usepackage{etoolbox}
+\usepackage[absolute,overlay]{textpos}
+
+\graphicspath{{Figs/}{../Figs/}}
+
+% Stata/R significance markers.
+\newcommand{\sym}[1]{\ifmmode^{#1}\else\(^{#1}\)\fi}
+
+\usepackage{beamer_style}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=crimson,
+  citecolor=crimson,
+  urlcolor=crimson,
+  pdfauthor={\PresentationPDFAuthors},
+  pdftitle={\inserttitle}
+}
+
+% Add paper-specific notation here. Do not import a large generic math file.

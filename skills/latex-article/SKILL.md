@@ -23,6 +23,7 @@ Build complete, compilable economics-paper projects. Default to a new modular pr
 4. Put supplied graphics in `Figs/` and complete `tabular` fragments in `Tabs/`. Do not prescribe or generate analytical figures unless the user explicitly asks for that separate work.
 5. Use the exact canonical wrappers from `snippets.tex` or the conventions reference.
 6. Keep optional packages such as `subcaption`, `rotating`, `longtable`, `threeparttablex`, `pdflscape`, `dcolumn`, `bm`, TikZ, PGFPlots, and theorem systems out of the preamble until needed. Load only the capabilities required by the paper.
+7. Load `caption` with `skip=0pt`, retain zero caption skip in the table- and figure-specific `\captionsetup` calls, and keep the bundled `threeparttable` patch that removes its separate post-caption gap.
 
 ## Edit an existing project
 
