@@ -1,0 +1,196 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamer_style}[2026/07/13 Crimson Montero-Yang Beamer style]
+
+\definecolor{crimson}{HTML}{A51C30}
+\definecolor{ink}{HTML}{171717}
+\definecolor{muted}{HTML}{666666}
+\definecolor{palegray}{HTML}{D9DEE2}
+\definecolor{buttonfill}{HTML}{ECEDEF}
+\definecolor{citationmuted}{HTML}{8F626A}
+
+\usefonttheme{professionalfonts}
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{normal text}{fg=ink,bg=white}
+\setbeamercolor{structure}{fg=crimson}
+\setbeamercolor{alerted text}{fg=crimson}
+\setbeamersize{text margin left=0.48cm,text margin right=0.48cm}
+\setstretch{1.05}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+\setbeamercolor{slide number}{fg=muted,bg=white}
+\setbeamerfont{slide number}{size=\scriptsize}
+\setbeamertemplate{footline}{%
+  \leavevmode
+  \hbox{%
+    \begin{beamercolorbox}[
+      wd=\paperwidth,
+      ht=2.4ex,
+      dp=1.0ex,
+      rightskip=0.35cm
+    ]{slide number}%
+      \hfill\usebeamerfont{slide number}%
+      \insertframenumber/\inserttotalframenumber
+    \end{beamercolorbox}%
+  }%
+}
+
+\setbeamercolor{frametitle}{fg=crimson,bg=white}
+\setbeamerfont{frametitle}{size=\Large,series=\mdseries}
+\setbeamerfont{framesubtitle}{size=\small,shape=\itshape}
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \vspace{0.16cm}%
+  \usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}%
+  \strut\insertframetitle\strut\par
+  \ifblank{\insertframesubtitle}{}{%
+    {\usebeamerfont{framesubtitle}\color{muted}\insertframesubtitle\par}%
+  }%
+  \vspace{0.05cm}%
+}
+
+\setbeamertemplate{itemize item}{\raise0.15ex\hbox{\scriptsize$\blacktriangleright$}}
+\setbeamertemplate{itemize subitem}{\raise0.3ex\hbox{\scriptsize--}}
+\setbeamertemplate{itemize subsubitem}{\raise0.3ex\hbox{\tiny--}}
+\setlength{\leftmargini}{1.35em}
+\setlength{\leftmarginii}{1.2em}
+
+\setbeamercolor{caption name}{fg=crimson}
+\setbeamercolor{caption}{fg=ink}
+\setbeamerfont{caption}{size=\small}
+\setbeamerfont{caption name}{series=\bfseries}
+\setbeamertemplate{caption}[numbered]
+\setlength{\abovecaptionskip}{0pt}
+\setlength{\belowcaptionskip}{0pt}
+
+% threeparttable otherwise inserts 0.2\baselineskip after a caption above a
+% tabular. Remove that package-level gap so the top rule follows the title.
+\makeatletter
+\patchcmd{\TPT@measurement}
+  {\TPT@docapt \vskip.2\baselineskip}
+  {\TPT@docapt \vskip0pt}
+  {}{}
+\patchcmd{\TPT@tabargset}
+  {\TPT@docapt \vskip.2\baselineskip}
+  {\TPT@docapt \vskip0pt}
+  {}{}
+\makeatother
+
+% Parenthetical citations are intentionally secondary to the spoken claim.
+\RenewDocumentCommand{\citep}{o o m}{%
+  \begingroup
+  \hypersetup{citecolor=citationmuted}%
+  \raisebox{0.1ex}{\scalebox{0.8}{%
+    \IfNoValueTF{#1}
+      {(\citealp{#3})}
+      {\IfNoValueTF{#2}
+        {(\citealp[#1]{#3})}
+        {(\citealp[#1][#2]{#3})}}%
+  }}%
+  \endgroup
+}
+
+\newcommand\fnote[1]{%
+  \par\vspace{0.15em}%
+  {\footnotesize\justifying #1\par}%
+}
+
+\makeatletter
+\setbeamercolor{title}{fg=crimson}
+\setbeamercolor{subtitle}{fg=crimson}
+\setbeamerfont{title}{size=\LARGE,series=\mdseries}
+\setbeamerfont{subtitle}{size=\Large,series=\mdseries}
+\setbeamertemplate{title page}{%
+  \vbox{}\vfill
+  \begin{center}
+    \begin{minipage}{0.80\paperwidth}
+      \raggedright
+      {\usebeamerfont{title}\usebeamercolor[fg]{title}\inserttitle\par}
+      \ifx\insertsubtitle\@empty\else
+        \vspace{0.12em}%
+        {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle\par}%
+      \fi
+    \end{minipage}\par
+    \vspace{1.0cm}
+    \begin{minipage}{0.76\paperwidth}
+      \PresentationAuthorBlock
+    \end{minipage}\par
+    \ifx\insertdate\@empty\else
+      \vspace{0.55cm}
+      \begin{minipage}{0.76\paperwidth}
+        \centering\small\color{muted}\insertdate\par
+      \end{minipage}\par
+    \fi
+  \end{center}
+  \vfill
+}
+\makeatother
+
+\ifdim\paperwidth>1.5\paperheight
+  \setbeamerfont{section in toc}{size=\small,series=\mdseries}
+  \setbeamerfont{subsection in toc}{size=\footnotesize,shape=\itshape}
+  \makeatletter
+  \patchcmd{\beamer@sectionintoc}{\vskip1.5em}{\vskip0.75em}{}{}
+  \makeatother
+\else
+  \setbeamerfont{section in toc}{size=\normalsize,series=\mdseries}
+  \setbeamerfont{subsection in toc}{size=\small,shape=\itshape}
+\fi
+\setbeamercolor{section in toc}{fg=crimson}
+\setbeamercolor{section in toc shaded}{fg=palegray}
+\setbeamercolor{subsection in toc}{fg=crimson}
+\setbeamercolor{subsection in toc shaded}{fg=palegray}
+\setbeamertemplate{section in toc}{\inserttocsection\par}
+\setbeamertemplate{subsection in toc}{\hspace{1.25em}\inserttocsubsection\par}
+
+\newif\ifsectionoutlines
+\sectionoutlinestrue
+\AtBeginSection[]{%
+  \ifsectionoutlines
+    \begin{frame}[plain,noframenumbering]{Outline}
+      \tableofcontents[
+        currentsection,
+        sectionstyle=show/shaded,
+        subsectionstyle=show/show/hide
+      ]
+    \end{frame}
+  \fi
+}
+
+\setbeamercolor{button}{fg=crimson,bg=buttonfill}
+\setbeamerfont{button}{size=\scriptsize,series=\mdseries}
+
+\newcommand<>{\goto}[2]{%
+  \alt#3{\hyperlink{#1}{\beamergotobutton{#2}}}{}%
+}
+\newcommand<>{\backto}[2]{%
+  \alt#3{\hyperlink{#1}{\beamerreturnbutton{#2}}}{}%
+}
+
+\newcommand{\bottomleft}[1]{%
+  \begin{textblock*}{\dimexpr\paperwidth-0.96cm\relax}(0.48cm,{\dimexpr\paperheight-0.82cm\relax})
+    \noindent\raggedright #1
+  \end{textblock*}%
+}
+\newcommand{\bottomright}[1]{%
+  \begin{textblock*}{\dimexpr\paperwidth-0.96cm\relax}(0.48cm,{\dimexpr\paperheight-0.82cm\relax})
+    \noindent\raggedleft #1
+  \end{textblock*}%
+}
+\newcommand{\topleft}[1]{%
+  \begin{textblock*}{\dimexpr\paperwidth-0.96cm\relax}(0.48cm,0.90cm)
+    \noindent\raggedright #1
+  \end{textblock*}%
+}
+\newcommand{\topright}[1]{%
+  \begin{textblock*}{\dimexpr\paperwidth-0.96cm\relax}(0.48cm,0.90cm)
+    \noindent\raggedleft #1
+  \end{textblock*}%
+}
+
+\AtBeginDocument{%
+  \setlength\abovedisplayskip{0.5em}%
+  \setlength\belowdisplayskip{0.7em}%
+  \setlength\abovedisplayshortskip{0.35em}%
+  \setlength\belowdisplayshortskip{0.5em}%
+}

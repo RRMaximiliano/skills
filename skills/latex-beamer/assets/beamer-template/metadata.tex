@@ -1,0 +1,25 @@
+\title{Presentation Title:}
+\subtitle{A Descriptive Subtitle}
+\newcommand{\PresentationPDFAuthors}{First Author; Second Author}
+
+% Keep author names centered above italic affiliations. Add or remove columns
+% as needed; stack authors when horizontal columns become crowded.
+\newcommand{\PresentationAuthorBlock}{%
+  \begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+      \centering
+      First Author\\[-0.1em]
+      {\small\itshape First Affiliation}
+    \column{0.48\textwidth}
+      \centering
+      Second Author\\[-0.1em]
+      {\small\itshape Second Affiliation}
+  \end{columns}%
+}
+
+% Use {} to suppress the date.
+\date{\today}
+
+% Enable only after references.bib contains cited, verified entries.
+\newif\ifshowbibliography
+\showbibliographyfalse

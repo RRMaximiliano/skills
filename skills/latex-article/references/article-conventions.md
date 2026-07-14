@@ -37,6 +37,7 @@ Tabs/
 - Use 11pt US Letter, Palatino (`mathpazo`), one-inch margins, traditional paragraph indentation, and no paragraph skip.
 - Use `\onehalfspacing` for prose and `\singlespacing` for tables and references.
 - Load `threeparttable` with its `flushleft` option so table notes align with the table body rather than inheriting the default list indentation.
+- Load `caption` with `skip=0pt` and retain the bundled patch to `threeparttable`'s internal post-caption skip so the title sits directly above the top rule.
 - Use `natbib`, `\citet`, `\citep`, and `\bibliographystyle{aer}`.
 - Define `winered` as `\definecolor{winered}{rgb}{0.5,0,0}`.
 - Enable `pagebackref`; format bibliography backlinks as `(Cited on ...)`; load `footnotebackref` after `hyperref`.
