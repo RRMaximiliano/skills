@@ -7,7 +7,7 @@ description: "Use for the user's crimson economics Beamer slides: slides_updated
 
 Personal crimson Beamer slide style. Use for the slide container, not Stata/R
 code that generates tables. For paper `.tex` containers use
-`latex-paper-templates`.
+`latex-article`.
 
 ## Workflow
 

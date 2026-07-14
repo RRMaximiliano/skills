@@ -27,7 +27,7 @@ are optional.
 - `stata-latex-tables`: opinionated Stata-to-LaTeX table workflows using
   `eststo`, `esttab`, `estadd`, panel table fragments, custom balance tables,
   and reproducible paper-ready outputs.
-- `latex-paper-templates`: personal economics paper LaTeX templates using
+- `latex-article`: modular economics article projects using
   `article`, `natbib`, AER bibliography style, `threeparttable` table wrappers,
   input-based table fragments, configured captions, and figure conventions.
 - `latex-beamer`: personal crimson economics Beamer slide templates using
@@ -38,7 +38,7 @@ are optional.
 
 - DIME-style data workflow or review: `development-research-in-practice`
 - My Stata-to-LaTeX table style: `stata-latex-tables`
-- My paper container and preamble: `latex-paper-templates`
+- My paper container and preamble: `latex-article`
 - My crimson Beamer slide style: `latex-beamer`
 
 ## Maintenance
@@ -62,7 +62,7 @@ Install only one skill:
 ```bash
 npx skills@latest add RRMaximiliano/skills --skill development-research-in-practice
 npx skills@latest add RRMaximiliano/skills --skill stata-latex-tables
-npx skills@latest add RRMaximiliano/skills --skill latex-paper-templates
+npx skills@latest add RRMaximiliano/skills --skill latex-article
 npx skills@latest add RRMaximiliano/skills --skill latex-beamer
 ```
 
@@ -85,7 +85,7 @@ npx skills@latest add \
   https://github.com/RRMaximiliano/skills/tree/main/skills/stata-latex-tables
 
 npx skills@latest add \
-  https://github.com/RRMaximiliano/skills/tree/main/skills/latex-paper-templates
+  https://github.com/RRMaximiliano/skills/tree/main/skills/latex-article
 
 npx skills@latest add \
   https://github.com/RRMaximiliano/skills/tree/main/skills/latex-beamer

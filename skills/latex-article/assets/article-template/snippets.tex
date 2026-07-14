@@ -1,0 +1,50 @@
+% Copy-ready patterns. This file is not input by main.tex.
+
+% -----------------------------------------------------------------------------
+% Standard imported table
+% -----------------------------------------------------------------------------
+\begin{table}[H]
+  \centering
+  \singlespacing
+  \adjustbox{max width=\textwidth}{%
+    \begin{threeparttable}
+      \caption{Descriptive table title}\label{tab:descriptive_label}
+      \input{Tabs/table_fragment.tex}
+      \begin{tablenotes}
+        \setlength\labelsep{0pt}
+        \footnotesize
+        \item \textit{Notes}: Describe the unit of observation, specification,
+        controls, inference, and significance notation. Statistical significance
+        at the 1\%, 5\%, and 10\% levels is indicated by \sym{***}, \sym{**},
+        and \sym{*}, respectively.
+      \end{tablenotes}
+    \end{threeparttable}
+  }
+\end{table}
+
+% -----------------------------------------------------------------------------
+% Standard figure
+% -----------------------------------------------------------------------------
+\begin{figure}[H]
+  \caption{Descriptive figure title}
+  \label{fig:descriptive_label}
+  \centering
+  \includegraphics[width=1\linewidth]{Figs/figure_file.pdf}
+  \fnote{\textit{Notes}: Explain the estimand, sample, confidence intervals,
+  standardization, controls, and source.}
+\end{figure}
+
+% -----------------------------------------------------------------------------
+% Numbered equation
+% -----------------------------------------------------------------------------
+\begin{equation}
+  y_{it} = \alpha + \beta D_{it} + \varepsilon_{it},
+  \label{eq:main_spec}
+\end{equation}
+
+% Refer to Table~\ref{tab:descriptive_label},
+% Figure~\ref{fig:descriptive_label}, and equation~\eqref{eq:main_spec}.
+
+% Multipage tables are intentionally omitted from this default file because
+% they require optional packages. See references/optional-capabilities.md in
+% the latex-article skill for the canonical longtable/threeparttablex pattern.

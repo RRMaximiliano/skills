@@ -28,7 +28,7 @@ If a balance table is requested with `iebaltab`, stay in
 `development-research-in-practice`. If the user asks for custom personal table
 formatting outside DIME defaults, route to `stata-latex-tables`.
 
-## Route To `latex-paper-templates`
+## Route To `latex-article`
 
 Use when the task is the LaTeX paper container:
 
@@ -53,5 +53,5 @@ For mixed tasks, apply skills by layer:
 1. Generate or review data/table code with `development-research-in-practice` or
    `stata-latex-tables`.
 2. Place the resulting table or figure in the final paper with
-   `latex-paper-templates`.
+   `latex-article`.
 3. Place the resulting table or figure in slides with `latex-beamer`.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "LaTeX Article"
+  short_description: "Build polished economics article projects"
+  default_prompt: "Use $latex-article to create a modular, compilable economics paper project."

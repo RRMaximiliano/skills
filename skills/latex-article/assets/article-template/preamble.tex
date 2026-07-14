@@ -1,0 +1,82 @@
+% Core typography and layout
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage[margin=1in]{geometry}
+\usepackage{mathpazo}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{titlesec}
+
+% Mathematics
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{chngcntr}
+\numberwithin{equation}{section}
+
+% Tables and figures
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{adjustbox}
+\usepackage[flushleft]{threeparttable}
+\usepackage[skip=0pt,labelfont=bf]{caption}
+\usepackage{varwidth}
+\usepackage{ragged2e}
+
+% Citations and links
+\usepackage[authoryear,round]{natbib}
+\usepackage{xcolor}
+\definecolor{winered}{rgb}{0.5,0,0}
+\usepackage[
+  plainpages=false,
+  pdfpagelabels,
+  pagebackref,
+  hypertexnames=false
+]{hyperref}
+\hypersetup{
+  colorlinks=true,
+  breaklinks=true,
+  citecolor=winered,
+  linkcolor=winered,
+  menucolor=winered,
+  urlcolor=winered,
+  pdfauthor={\PaperAuthors},
+  pdftitle={\PaperTitle},
+  pdfkeywords={\PaperKeywords}
+}
+\renewcommand*\backref[1]{\ifx#1\relax \else (Cited on #1) \fi}
+\usepackage{footnotebackref}
+
+% Caption system
+\DeclareCaptionFormat{myformat}{%
+  \begin{varwidth}{\linewidth}%
+    \centering
+    #1#2#3%
+  \end{varwidth}%
+}
+\captionsetup{justification=centering}
+\AtBeginDocument{\captionsetup[table]{format=myformat}}
+\AtBeginDocument{\captionsetup[figure]{format=myformat}}
+
+\newcommand\fnote[1]{%
+  {%
+    \captionsetup{
+      format=default,
+      font=footnotesize,
+      justification=justified,
+      singlelinecheck=false
+    }%
+    \caption*{\justifying #1}%
+  }%
+}
+
+% Stata/R significance markers
+\newcommand{\sym}[1]{\ifmmode^{#1}\else\(^{#1}\)\fi}
+
+% Journal-style composition
+\onehalfspacing
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{0pt}
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries\itshape}{\thesubsection.}{0.5em}{}

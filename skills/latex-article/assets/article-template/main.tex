@@ -1,0 +1,59 @@
+\documentclass[11pt,letterpaper]{article}
+
+\input{metadata}
+\input{preamble}
+
+\ifdefempty{\PaperThanks}
+  {\title{\PaperTitle}}
+  {\title{\PaperTitle\thanks{\PaperThanks}}}
+\author{\PaperAuthorBlock}
+\date{\PaperDate}
+
+\begin{document}
+
+\pagenumbering{gobble}
+\maketitle
+
+\begin{abstract}
+\input{Sections/00_abstract}
+\end{abstract}
+
+\vspace{1em}
+\noindent\textbf{Keywords:} \PaperKeywords
+
+\noindent\textbf{JEL Classification:} \PaperJEL
+
+\thispagestyle{empty}
+\clearpage
+\pagenumbering{arabic}
+
+\input{Sections/01_introduction}
+\input{Sections/02_background}
+\input{Sections/03_data}
+\input{Sections/04_empirical_strategy}
+\input{Sections/05_results}
+\input{Sections/06_conclusion}
+
+\ifpaperhasreferences
+  \clearpage
+  \begin{singlespace}
+  \bibliographystyle{aer}
+  \bibliography{references}
+  \end{singlespace}
+\fi
+
+\clearpage
+\appendix
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\counterwithin*{table}{section}
+\counterwithin*{figure}{section}
+\renewcommand{\thetable}{\Alph{section}\arabic{table}}
+\renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+\titleformat{\section}{\large\bfseries}{Appendix~\thesection.}{0.5em}{}
+
+\input{Appendices/A_data}
+\input{Appendices/B_theory}
+\input{Appendices/C_additional_results}
+
+\end{document}
