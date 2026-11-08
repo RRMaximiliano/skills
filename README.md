@@ -33,6 +33,12 @@ are optional.
 - `latex-beamer`: personal crimson economics Beamer slide templates using
   `slides_updated`, `math`, appendix navigation buttons, input-based tables,
   configured figures, and `biblatex` references.
+- `tfhandout`: TF reading handouts in my first-person teaching voice, typeset
+  with the bundled `tfhandout.sty` package (XeLaTeX, Minion Pro, US Letter),
+  R-generated tables, and plain-language figure notes.
+- `zotero-import`: files downloaded PDFs into the right collection of my local
+  Zotero library after I confirm, checks for duplicates, and offers to move the
+  downloaded copies to the Trash. Uses only Zotero's local connector.
 
 ## Choosing a Skill
 
@@ -40,6 +46,8 @@ are optional.
 - My Stata-to-LaTeX table style: `stata-latex-tables`
 - My paper container and preamble: `latex-article`
 - My crimson Beamer slide style: `latex-beamer`
+- A TF reading handout for students: `tfhandout`
+- Filing downloaded papers into my Zotero library: `zotero-import`
 
 ## Maintenance
 
@@ -64,6 +72,8 @@ npx skills@latest add RRMaximiliano/skills --skill development-research-in-pract
 npx skills@latest add RRMaximiliano/skills --skill stata-latex-tables
 npx skills@latest add RRMaximiliano/skills --skill latex-article
 npx skills@latest add RRMaximiliano/skills --skill latex-beamer
+npx skills@latest add RRMaximiliano/skills --skill tfhandout
+npx skills@latest add RRMaximiliano/skills --skill zotero-import
 ```
 
 Install globally for Codex:

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Zotero Import"
+  short_description: "File downloaded PDFs into the right Zotero collection"
+  default_prompt: "Use $zotero-import to import my new PDFs in Downloads into Zotero."

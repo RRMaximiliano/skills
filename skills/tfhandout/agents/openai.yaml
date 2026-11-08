@@ -1,0 +1,4 @@
+interface:
+  display_name: "TF Handout"
+  short_description: "Write TF reading handouts in Rony's design and voice"
+  default_prompt: "Use $tfhandout to write a TF reading handout with the tfhandout LaTeX package."

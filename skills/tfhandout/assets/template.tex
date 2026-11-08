@@ -1,0 +1,61 @@
+% <Course> <TF session / notes>: <topic>. A reading handout.
+% Design: tfhandout.sty (~/Library/texmf/tex/latex/tfhandout/).
+% Compile with XeLaTeX: latexmk -xelatex handout.tex
+\documentclass{article}
+\usepackage{tfhandout}
+\hypersetup{pdftitle={<Course> <Session>: <Topic>}}
+
+\title{\textsc{<TF Session N>} \\ <Plain Economist-Style Title>\thanks{Based on the handouts from Prof. <Name> and my notes from econometrics.}}
+\author{TF: Rony Rodríguez-Ramírez}
+\date{<Course> $\cdot$ <School>}
+
+\begin{document}
+\maketitle
+
+\section{<First section: start here, no summary paragraph>}\label{sec:first}
+Let's assume that \ldots{} Therefore, \ldots
+\begin{empheq}[box=\tcbhighmath]{equation}\label{eq:key}
+y = \beta_0 + \beta_1 x + u
+\end{empheq}
+
+\begin{defin}[<Term>, <source>]
+<Definition.>
+\end{defin}
+
+\begin{keybox}[title={A student's question}]
+\emph{``<Question, verbatim.>''}\par\smallskip
+My short answer: \ldots
+\end{keybox}
+
+% Tables: an R script writes a complete tabular fragment to Tabs/; never edit it by hand.
+\begin{table}[tbp]
+  \centering
+  \singlespacing
+  \adjustbox{max width=\textwidth}{%
+    \begin{threeparttable}
+      \caption{<Caption on top>}\label{tab:main}
+      \input{Tabs/main.tex}
+      \begin{tablenotes}
+        \setlength\labelsep{0pt}
+        \footnotesize
+        \item \textit{Notes}: <Sample, specification, standard errors.>
+      \end{tablenotes}
+    \end{threeparttable}
+  }
+\end{table}
+
+% Figures: caption on top, plain-language notes below.
+\begin{figure}[tbp]
+\centering
+\caption{<Caption on top>}\label{fig:main}
+% \includegraphics[width=0.8\textwidth]{Figs/<file>.pdf}  or TikZ / pgfplots
+\fnote{\textit{Notes}: <How to read the figure.>}
+\end{figure}
+
+% \bibliography{refs}   % only if something is cited
+
+% \newpage
+% \appendix
+% \section{R code}\label{app:code}
+% \lstinputlisting[style=rcode]{../code/<script>.R}
+\end{document}

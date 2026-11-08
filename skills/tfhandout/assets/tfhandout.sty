@@ -1,0 +1,249 @@
+%% tfhandout.sty -- Rony Rodriguez-Ramirez's TF handout design.
+%% Source of truth: GitHub/skills/skills/tfhandout/assets/tfhandout.sty (symlinked into TEXMFHOME).
+%% The ECON 2360 notes preamble (XeLaTeX, Minion Pro + STIX Two Math, Menlo for code,
+%% 1.2 line spacing, sharp tcolorboxes, natbib/AER, webbrown links) on US Letter with
+%% 1-inch margins. First used in API-209 TF Session 6 (Oct 2026).
+%%
+%% Usage:   \documentclass{article}
+%%          \usepackage{tfhandout}
+%%          \hypersetup{pdftitle={...}}
+%% Compile: latexmk -xelatex file.tex
+%%
+%% Provides: keybox (titled tcolorbox), \tcbhighmath boxed equations, defin/example/remark,
+%%   table captions on top with zero skip (adjustbox + threeparttable), \fnote{} for figure
+%%   notes, \sym{} for stars, the rcode listings style, colors webbrown/webgreen/webpurple and
+%%   over/under/flip, \corr, \sd, \E, column types C{} and L{}.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tfhandout}[2026/11/05 TF handout design]
+%----------------------------------------------------------------------------------------
+%   ENCODING, FONT, AND LANGUAGE PACKAGES
+%----------------------------------------------------------------------------------------
+
+\RequirePackage[utf8]{inputenc} % Allows the use of UTF-8 input encoding
+\RequirePackage{latexsym}       % Provides a few additional LaTeX symbols
+\RequirePackage{dsfont}         % Provides double-stroke fonts, e.g., for indicator functions (\mathds{1})
+\RequirePackage[english]{babel} % Add language support for csquotes
+\RequirePackage[autostyle]{csquotes}
+\MakeOuterQuote{"}
+
+%----------------------------------------------------------------------------------------
+%   PAGE LAYOUT AND SPACING (handout layout: US Letter, 1-inch margins)
+%----------------------------------------------------------------------------------------
+
+\RequirePackage{geometry}       % For customizing page margins and layout
+\geometry{
+    letterpaper,
+    margin=1in,
+}
+\RequirePackage{setspace}       % For controlling line spacing
+\setstretch{1.2}            % Sets the line spacing to 1.2
+
+\setlength{\parindent}{0cm} % Sets paragraph indentation to zero for a block-paragraph style
+\setlength{\parskip}{0.3em}
+
+%----------------------------------------------------------------------------------------
+%   MATH PACKAGES
+%----------------------------------------------------------------------------------------
+
+\RequirePackage{amsmath}        % AMS package for advanced math environments and commands
+\RequirePackage{amssymb}        % AMS package for extended symbol collection
+\RequirePackage{amsthm}         % AMS package for theorem-like environments
+\RequirePackage{mathrsfs}       % Provides script font support with \mathscr
+\RequirePackage{empheq}         % For creating boxed/highlighted equations
+\RequirePackage{cancel}         % For drawing cancellation lines through math expressions
+\RequirePackage{enumitem}       % For customizing lists (enumerate, itemize, description)
+\setlist[itemize]{noitemsep}
+\setlist[enumerate]{noitemsep}
+
+\numberwithin{equation}{section} % Numbers equations based on the section, e.g., (1.1), (1.2)
+\allowdisplaybreaks               % Allows page breaks within long multi-line equations
+
+%----------------------------------------------------------------------------------------
+%   GRAPHICS AND DRAWING PACKAGES
+%----------------------------------------------------------------------------------------
+
+\RequirePackage{graphicx}       % For including images
+\RequirePackage{tikz}           % The main package for creating vector graphics
+\usetikzlibrary{calc, arrows.meta} % TikZ libraries
+\RequirePackage[skip=0pt,labelfont=bf]{caption}
+
+%----------------------------------------------------------------------------------------
+%   TABLES AND LISTINGS PACKAGES
+%----------------------------------------------------------------------------------------
+
+\RequirePackage{array}          % Provides more advanced options for columns in tables
+\RequirePackage{listings}       % For typesetting code snippets and algorithms
+\RequirePackage{booktabs}       % Rules for tables
+\RequirePackage{float}          % [H] placement: keep tables and figures where they appear in the text
+% Let text share a page with tall floats
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.85}
+\setlength{\textfloatsep}{12pt plus 2pt minus 4pt}
+\setlength{\floatsep}{10pt plus 2pt minus 2pt}
+\RequirePackage{adjustbox}      % Table wrapper: \adjustbox{max width=\textwidth}
+\RequirePackage[flushleft]{threeparttable} % Table notes aligned with the table body
+\RequirePackage{varwidth}       % Centered captions
+\RequirePackage{etoolbox}       % \patchcmd
+
+%----------------------------------------------------------------------------------------
+%   TITLE AND AUTHOR PACKAGES
+%----------------------------------------------------------------------------------------
+
+\RequirePackage{titling}        % Provides control over the formatting of \maketitle
+\RequirePackage[affil-it]{authblk} % For author affiliations below the author names
+\setlength{\droptitle}{-8em}   % Adjusts vertical position of the title
+\predate{\begin{center}\vspace{-0.6em}}\postdate{\end{center}\vspace{-1.2em}}
+
+%----------------------------------------------------------------------------------------
+%   BIBLIOGRAPHY
+%----------------------------------------------------------------------------------------
+
+\RequirePackage{natbib}         % For advanced citation management
+\bibliographystyle{aer}     % Sets the bibliography style (American Economic Review)
+\renewcommand{\bibsection}{\subsection*{References}}
+\setlength{\bibsep}{0.2em}
+\renewcommand{\bibfont}{\small}
+
+%----------------------------------------------------------------------------------------
+%   UTILITY AND MISCELLANEOUS PACKAGES
+%----------------------------------------------------------------------------------------
+
+\RequirePackage{soul}           % For highlighting (\hl) and underlining (\ul) text
+\RequirePackage{pifont}         % Provides access to Zapf Dingbats symbols like checkmarks
+\RequirePackage[most]{tcolorbox} % For creating colored and framed text boxes
+\RequirePackage{color}
+\definecolor{webgreen}{rgb}{0,.5,0}
+\definecolor{webbrown}{rgb}{.6,0,0}
+\definecolor{webpurple}{rgb}{0.7,0,0.7}
+% Figure palette (blue, amber, red)
+\definecolor{over}{HTML}{1F5AA6}
+\definecolor{under}{HTML}{D08C00}
+\definecolor{flip}{HTML}{B03A2E}
+
+%----------------------------------------------------------------------------------------
+%   HYPERLINKS (SHOULD GENERALLY BE LOADED LAST)
+%----------------------------------------------------------------------------------------
+
+\RequirePackage[plainpages=false,pdfpagelabels,pagebackref]{hyperref} % For creating hyperlinks within the document
+\hypersetup{hidelinks}      % Makes links clickable but removes the colored box/border
+\hypersetup{
+  breaklinks = true,
+  colorlinks=true,
+  anchorcolor= webbrown,
+  citecolor= webbrown,
+  filecolor= webbrown,
+  linkcolor= webbrown,
+  menucolor= webbrown,
+  urlcolor= webbrown,
+  citebordercolor= 1 0 0,
+  menubordercolor=1 0 0,
+  urlbordercolor=1 0 0,
+  runbordercolor=1 0 0 }
+\hypersetup{pdfauthor=Rony Rodriguez-Ramirez} % set pdftitle in the document
+
+% Hyperlinks to the citations
+\renewcommand*\backref[1]{\ifx#1\relax \else (Cited on #1) \fi}
+\RequirePackage{footnotebackref}
+%----------------------------------------------------------------------------------------
+%   SPECIFY FONTS
+%----------------------------------------------------------------------------------------
+% Using Xelatex
+\RequirePackage{iftex}
+\ifxetex
+    % --- LOCAL MAC CONFIGURATION (Minion Pro + STIX) ---
+    \RequirePackage{fontspec}
+    \RequirePackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+
+    % Main Text: Minion Pro
+    \setmainfont{Minion Pro}[
+        Numbers = {Lining, Proportional},
+        Kerning = On,
+        Ligatures = TeX
+    ]
+
+    % Math Font: STIX Two Math
+    \setmathfont{STIX Two Math}[Scale=MatchLowercase]
+
+    % Code: Menlo
+    \setmonofont{Menlo}[Scale=MatchLowercase]
+
+\else
+    % --- OVERLEAF FALLBACK CONFIGURATION ---
+    \RequirePackage[T1]{fontenc}
+\fi
+
+%----------------------------------------------------------------------------------------
+%   THEOREM AND ENVIRONMENT DEFINITIONS
+%----------------------------------------------------------------------------------------
+\theoremstyle{definition}
+\newtheorem{example}{Example}
+\newtheorem{defin}{Definition}
+
+\theoremstyle{plain}
+\newtheorem{remark}{Remark}
+
+%----------------------------------------------------------------------------------------
+%   CUSTOM BOX AND TABLE CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+% Redefine tcolorbox to have sharp edges and a thinner border
+\tcbset{
+    breakable,
+    enhanced,
+    arc=0mm,
+    outer arc=0mm,
+    boxrule=0.3mm,
+}
+% Key results, the student's question, and the answer checks
+\newtcolorbox{keybox}[1][]{breakable,enhanced,colback=webbrown!3,colframe=webbrown!80!black,
+  fonttitle=\bfseries,coltitle=white,colbacktitle=webbrown!80!black,
+  left=6pt,right=6pt,top=4pt,bottom=4pt,before upper={\setstretch{1.05}},#1}
+\tcbset{highlight math style={colback=webbrown!3,colframe=webbrown!80!black,
+  arc=0mm,outer arc=0mm,boxrule=0.3mm,left=8pt,right=8pt}}
+
+% Define a new centered column type for tables
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+%----------------------------------------------------------------------------------------
+%   CUSTOM MACROS AND OPERATORS
+%----------------------------------------------------------------------------------------
+% Caption system (latex-article convention)
+\DeclareCaptionFormat{myformat}{%
+  \begin{varwidth}{\linewidth}%
+    \centering
+    #1#2#3%
+  \end{varwidth}%
+}
+\captionsetup{justification=centering}
+\AtBeginDocument{\captionsetup[table]{format=myformat,skip=0pt}}
+\AtBeginDocument{\captionsetup[figure]{format=myformat,skip=4pt}}
+% threeparttable otherwise adds its own 0.2\baselineskip below a caption.
+\patchcmd{\TPT@measurement}{\TPT@docapt \vskip.2\baselineskip}{\TPT@docapt \vskip0pt}{}{}
+\patchcmd{\TPT@tabargset}{\TPT@docapt \vskip.2\baselineskip}{\TPT@docapt \vskip0pt}{}{}
+\newcommand{\sym}[1]{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\newcommand\fnote[1]{%
+  {%
+    \captionsetup{format=default,font=footnotesize,justification=justified,singlelinecheck=false}%
+    \caption*{\setstretch{1}#1}%
+  }%
+}
+
+% R code in the appendix
+\lstdefinestyle{rcode}{
+  language=R,
+  basicstyle=\ttfamily\footnotesize\setstretch{1},
+  commentstyle=\color{webgreen},
+  keywordstyle=\color{webbrown}\bfseries,
+  stringstyle=\color{webpurple},
+  numbers=left, numberstyle=\tiny\color{black!50}, numbersep=6pt,
+  frame=lines, framesep=4pt, rulecolor=\color{black!40},
+  breaklines=true, columns=fullflexible, keepspaces=true,
+  showstringspaces=false, upquote=true, xleftmargin=1.5em
+}
+
+\DeclareMathOperator{\corr}{Corr}
+\DeclareMathOperator{\sd}{SD}
+\newcommand{\E}{\mathbb{E}}
+\endinput
