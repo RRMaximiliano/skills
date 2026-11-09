@@ -33,3 +33,13 @@ for DIME data-workflow standards use `development-research-in-practice`.
 
 For reviews, lead with reproducibility, output correctness, and LaTeX structure
 issues before style polish.
+
+## User preference: significance notes
+
+For tables displaying significance stars, use this exact sentence (user preference, 27 September 2026):
+
+```latex
+Statistical significance at the 1\%, 5\%, and 10\% levels is indicated by \sym{***}, \sym{**}, and \sym{*}, respectively.
+```
+
+Use `***` for 1%, `**` for 5%, and `*` for 10%; in `esttab`, use `star(* 0.10 ** 0.05 *** 0.01)`. Define `\sym` in the document preamble if it is not already defined. Explain the p-value basis (for example, unadjusted, survey-design or multiplicity-adjusted) separately so the standard sentence remains exact. Preserve the actual inference and do not attach this legend to tables without significance stars. Update table generators or authoritative note sources, then regenerate; do not change archived drafts or published source files.
