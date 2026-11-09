@@ -247,12 +247,14 @@ def cmd_import(a):
     item = summary(con, parent_id or att_id)
     want = d["name"]
     missing = [k for k in ("year", "publication", "DOI") if not item.get(k)]
+    att_key = con.execute("select key from items where itemID=?", (att_id,)).fetchone()[0]
     print(json.dumps({
         "ok": want in item["collections"],
         "target_collection": want,
         "recognized": bool(parent_id),
+        "stored": any((DATA_DIR / "storage" / att_key).glob("*.pdf")),
         "item": item,
-        "attachment_key": con.execute("select key from items where itemID=?", (att_id,)).fetchone()[0],
+        "attachment_key": att_key,
         "missing_fields": missing,
     }, indent=1, ensure_ascii=False))
 
