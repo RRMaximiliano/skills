@@ -1,11 +1,11 @@
 ---
 name: latex-beamer
-description: Create, convert, edit, and validate modular economics Beamer presentations in the user's crimson Montero–Yang style. Use for new slide scaffolds, article-to-deck conversion, or work on existing LaTeX Beamer decks involving 4:3 Lato slides, section outlines, imported figures and Stata/R table fragments, AER/natbib references, appendix navigation, overlays, and visual PDF QA.
+description: Create, convert, edit, and validate modular economics Beamer presentations in the user's crimson Montero–Yang style. Use for new slide scaffolds, article-to-deck conversion, or work on existing LaTeX Beamer decks involving 4:3 Alegreya Sans slides, section outlines, imported figures and Stata/R table fragments, AER/natbib references, appendix navigation, overlays, and visual PDF QA.
 ---
 
 # LaTeX Beamer
 
-Build sparse, projection-readable economics presentations with a white background, Lato typography, Harvard crimson (`#A51C30`), top-aligned content, and the visual grammar of the Montero–Yang reference deck.
+Build sparse, projection-readable economics presentations with a white background, Alegreya Sans typography, Harvard crimson (`#A51C30`), top-aligned content, and the visual grammar of the Montero–Yang reference deck.
 
 ## Choose the mode
 
@@ -18,12 +18,19 @@ If talk length is absent in article-to-deck mode, ask once. If unanswered, use a
 ## Hard requirements
 
 - Default to 4:3. Use 16:9 only when the user explicitly requests it; retain projection-readable outline type in widescreen mode.
+- Use `\usepackage[sfdefault]{AlegreyaSans}` as the default text font. Preserve another font only when the user explicitly requests it or an existing deck must retain its established typography.
+- Use descriptive headings and explicit analytical statements. Avoid slogans, aphorisms, consulting-style antithesis (including “X, not Y”), compressed headline formulas, and unsupported declarations about what “good analysis” does. When the user requests an Elmore-influenced register, apply `$elmore-writing` if it is available.
+- Introduce an unfamiliar analytical distinction with a concrete worked example before asking learners to classify, define, or apply it.
 - Keep content top-aligned. Never shrink prose to rescue an overcrowded frame; split it.
+- In instructional decks, put the activity format at the left and the duration at the right of `\framesubtitle` on every timed activity. Do not move durations among titles, blocks, or ad hoc page corners.
+- When a deck has a companion handout, put `HANDOUT P. n` at the right of `\framesubtitle` on every instructional frame that explains or uses handout content. Use the same section and activity labels in both artifacts. If one handout page maps to several frames, keep their sequence and terminology consistent, and verify the complete mapping during visual QA.
+- When producing a completed instructor version of a handout, keep it page-for-page synchronized with the student version. Build the responses themselves from the assigned reading: attribute the relevant definition, distinction, mechanism, or empirical claim to its author and include a concise chapter or page reference before applying it to the exercise. Distinguish what the reading establishes from an instructor's provisional inference, and correct response categories against the source before compiling. Do not add a separate ``reading connection'' annotation layer unless the user asks for one.
 - Use ordinary `itemize`/`enumerate`, concise bullets, small triangle first-level bullets, and dash second-level bullets.
 - Use automatic section outline frames unless the user requests a short deck without them. Current section is crimson; inactive sections are pale gray; current subsections are indented and italic. Stop automatic outlines before references and appendix.
 - Show substantive main-deck slide numbers at bottom right as `current/total`. Exclude the title page and outline frames from both display and count; hide the counter in the appendix.
 - Keep the custom command surface limited to `\goto`, `\backto`, `\bottomleft`, `\bottomright`, `\topleft`, `\topright`, `\fnote`, and `\sym`.
 - Use `natbib`, `\citet`, `\citep`, BibTeX, and `\bibliographystyle{aer}`. Do not add page-backreferences to slides.
+- In both Beamer decks and companion LaTeX handouts, use `\citet[<locator>]{<key>}` for narrative attributions and `\citep[<locator>]{<key>}` for parenthetical citations. Never type author--year citations manually. Reuse the project's BibTeX database; when a handout needs citations without a printed reference list, load the entries with `bibentry` and `\nobibliography{<database>}`.
 - Render `\citep{}` at 80% of the surrounding font size in a subdued crimson; retain ordinary `\citet{}` treatment.
 - Put references after the conclusion and optional closing frame, and before the appendix. Use `[allowframebreaks]` with Roman continuation titles only when references need more than one frame.
 - Omit speaker notes unless explicitly requested.
@@ -35,6 +42,15 @@ For a standalone deck, use local `Figs/`, `Tabs/`, and `references.bib`. For a n
 Use one source file per major section, not one file per frame. Keep metadata in `metadata.tex`, packages and project-specific macros in `preamble.tex`, and visual rules in `beamer_style.sty`.
 
 ## Figures and tables
+
+Read references/table-alignment.md before writing or editing any native LaTeX table.
+
+- Reserve native tables for genuine matrices, numeric results, and writable grids. Do not use p/X tables for glossaries, label--definition pairs, value lists, agendas with prose, or other content whose first lines must align.
+- Build glossary and label--definition layouts from one explicit row at a time: use Beamer columns with the t option for slides and paired parbox elements with the t option for handouts. Keep corresponding first baselines aligned even when either side wraps.
+- For schedules and agendas, use a plain tabular with fixed-width m columns throughout. Do not redefine tabularxcolumn locally or globally; that state can affect later tables.
+- When a true table needs wrapped prose, use a single, deliberately chosen alignment family and verify the rendered result row by row.
+- Never mix `p`/`X` paragraph columns with `l`/`c`/`r` cells or with a different `p`/`m`/`b` family in the same prose row; those column types do not share the same vertical reference model.
+- Do not repair row alignment with manual vertical-space nudges, struts chosen by eye, or per-cell raisebox adjustments.
 
 Read `references/exhibits-and-navigation.md` before adding exhibits or appendix buttons.
 
@@ -61,4 +77,6 @@ Use overlays only when they control exposition. Prefer explicit overlay specific
 4. Validate every `\goto`/`\backto` target and every citation, reference, label, and asset path.
 5. Keep the reusable template free of build artifacts.
 
-Do not report success while unresolved references, missing files, duplicate labels, clipping, or unreported overfull boxes remain.
+Inspect native tables at a readable zoom after rendering. Verify that corresponding cells share the intended top edge or vertical center, paying special attention to the first and last columns. A clean compile does not prove visual row alignment.
+
+Do not report success while unresolved references, missing files, duplicate labels, clipping, visibly misaligned table rows, or unreported overfull boxes remain.

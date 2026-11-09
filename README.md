@@ -30,9 +30,9 @@ are optional.
 - `latex-article`: modular economics article projects using
   `article`, `natbib`, AER bibliography style, `threeparttable` table wrappers,
   input-based table fragments, configured captions, and figure conventions.
-- `latex-beamer`: personal crimson economics Beamer slide templates using
-  `slides_updated`, `math`, appendix navigation buttons, input-based tables,
-  configured figures, and `biblatex` references.
+- `latex-beamer`: personal crimson economics Beamer decks (4:3, Alegreya Sans)
+  built on `beamer_style.sty`, with modular sections, appendix navigation
+  buttons, input-based tables, configured figures, and AER/natbib references.
 - `tfhandout`: TF reading handouts in my first-person teaching voice, typeset
   with the bundled `tfhandout.sty` package (XeLaTeX, Minion Pro, US Letter),
   R-generated tables, and plain-language figure notes.
