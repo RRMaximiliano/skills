@@ -39,6 +39,9 @@ are optional.
 - `zotero-import`: files downloaded PDFs into the right collection of my local
   Zotero library after I confirm, checks for duplicates, and offers to move the
   downloaded copies to the Trash. Uses only Zotero's local connector.
+- `sleep-when-done`: watches every running T3 Code thread and puts the Mac to
+  sleep once all are finished, ending any Amphetamine session first. Run it
+  from a no-project thread.
 
 ## Choosing a Skill
 
@@ -48,6 +51,7 @@ are optional.
 - My crimson Beamer slide style: `latex-beamer`
 - A TF reading handout for students: `tfhandout`
 - Filing downloaded papers into my Zotero library: `zotero-import`
+- Sleeping the Mac after my T3 Code threads finish: `sleep-when-done`
 
 ## Maintenance
 
@@ -74,6 +78,7 @@ npx skills@latest add RRMaximiliano/skills --skill latex-article
 npx skills@latest add RRMaximiliano/skills --skill latex-beamer
 npx skills@latest add RRMaximiliano/skills --skill tfhandout
 npx skills@latest add RRMaximiliano/skills --skill zotero-import
+npx skills@latest add RRMaximiliano/skills --skill sleep-when-done
 ```
 
 Install globally for Codex:

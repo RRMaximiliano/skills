@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sleep When Done"
+  short_description: "Sleep the Mac once all running T3 Code threads finish"
+  default_prompt: "Use $sleep-when-done to put my Mac to sleep after all my T3 threads finish."
