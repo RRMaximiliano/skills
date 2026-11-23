@@ -12,8 +12,20 @@ lacks.
 | Claude Code | `claude plugin marketplace add cursor/plugins` then `claude plugin install pstack@cursor-plugins` | `/pstack:poteto-mode <task>` |
 | Codex | `codex plugin marketplace add michael-denyer/pstack-claude` then `codex plugin add pstack@pstack-claude` | `$poteto-mode <task>` |
 
-After installing, run `setup-pstack` once in each agent. In Codex, also turn
-on the routing hook under `/hooks`.
+After installing, run `setup-pstack` once in each agent.
+
+- Claude Code writes the model sheet to `~/.claude/rules/pstack-models.md`,
+  which loads into every session. The official plugin has no session hook, so
+  call `/pstack:poteto-mode` yourself.
+- Codex writes `~/.codex/pstack-models.md`. Its step 7 pastes the model rows
+  into `~/.codex/AGENTS.md`. Skip that step when `AGENTS.md` is a symlink to
+  the guardrails, or the rows land in this repo. Then trust the routing hook
+  under `/hooks` in the Codex terminal app.
+
+When a project's git repo sits inside a larger folder (for example `Analysis/`
+inside a Dropbox project), a session started at the outer folder does not list
+the repo's project skills until it reads a file inside the repo. Start sessions
+in the repo, or add a one-line pointer to a `CLAUDE.md` in the outer folder.
 
 Companion skill from another repo, which I install rather than copy:
 
@@ -67,13 +79,56 @@ number.
 | 0. Environment check | Stata/R and package versions, raw-file checksums, seeds |
 | 1. Import contracts | `isid`, expected N per year, value ranges, missing-value rates, value labels |
 | 2. Step invariants | N in and N out at each step with reasons, merge counts, unique keys |
-| 3. Reference outputs | Coefficient, SE, N, clusters, and R² per table cell, compared after a clean rerun from raw |
-| 4. Determinism | Two runs give identical outputs |
+| 3. Reference outputs | Every cell each table exports (coefficient, SE, N, p-value, and clusters or R² where exported), compared after a clean rerun from raw, with references keyed to the data snapshot |
+| 4. Determinism | Two runs give identical datasets and tables, compared with a row hash or with `cf` after sorting on a unique key |
 | 5. Paper vs. outputs | Every number in the `.tex` traces to an output file |
 | 6. Known truth | Simulated data with a planted effect, run through the real estimation code |
-| 7. Checks can fail | Each layer turns red on a deliberately broken variant |
+| 7. Checks can fail | Every check turns red on a broken variant aimed at it: one variant per check, not per layer |
 
-Start with layers 2, 3, and 4. Add layer 6 for the main estimator.
+Start with layers 2, 3, and 4, and prove each check with layer 7. Add layer 6
+for the main estimator.
+
+How to build it:
+
+- Run the pipeline in throwaway copies: a copy of the code, read-only inputs,
+  empty output folders, and no credentials folder. That makes the guardrails
+  hold by construction: no downloads, no writes to frozen inputs, and every run
+  starts from raw. It also lets broken variants and proposed edits run without
+  touching the real code.
+- Stata batch mode exits 0 even when a do-file fails. Decide whether a run
+  succeeded by reading the log.
+- `datasignature` checksums each column separately, so it misses reordered
+  rows and values swapped between rows, which is what a bad merge produces.
+  Don't use it alone to prove two datasets are the same.
+- Store references with the snapshot ID they came from. A new snapshot shows
+  "no reference" until I classify the change (rule 7) and approve the new
+  reference.
+- Evidence is counts, hashes, and table cells. Logs that list study IDs stay
+  local and never go into the report.
+
+A first trial on a Stata RCT pipeline produced 118 checks and 27 broken
+variants. A full verification run (two reruns from raw plus all checks) took
+about 9 seconds. Fast pipelines make full reruns cheap. For slow ones, use the
+master's step switches to rerun only the affected steps.
+
+## Where pstack fits research badly
+
+`create-verification-skill` is written for apps, so translate its terms:
+launching the app means building a run copy and running the master do-file,
+and "ready" means the log reports that the run completed. Watch these
+mismatches:
+
+- pstack's proof standard is driving one feature once. Research needs every
+  check on every run, reference outputs with tolerances, determinism, and
+  proof that checks can fail. Those come from the layer table above, not from
+  pstack.
+- pstack's "capture all the evidence" conflicts with rule 8. Report
+  aggregates only.
+- pstack's "if it doesn't build, fix it first" conflicts with rule 1. Ask
+  before editing pipeline code, and show the diff.
+- pstack's generic web checks (ports, accessibility, seed data) don't apply.
+  The real checks come from the DIME checklist and
+  `audit_stata_project.py` in `development-research-in-practice`.
 
 Before reporting an estimate, check these points:
 
@@ -81,7 +136,8 @@ Before reporting an estimate, check these points:
    `e(sample)`.
 2. Did anything fail quietly? Look for `capture`, `quietly`, omitted
    collinear variables, and dropped singletons.
-3. Did the step run? Check the file contents and the log, not the timestamp.
+3. Did the step run? Check the file contents and the log, not the timestamp
+   or the exit code.
 4. Is the difference bigger than the noise from seeds, bootstraps, or
    permutations?
 5. Is the size plausible relative to the outcome's standard deviation?
@@ -92,6 +148,8 @@ Before reporting an estimate, check these points:
 ## Recipes
 
 ```text
+/pstack:create-verification-skill Build a verification skill for this Stata pipeline: layers 2, 3, and 4 from docs/pstack-for-economics.md, with one broken variant per check. Run in throwaway copies, never download data or write to frozen inputs, report aggregates only, and ask before editing any existing do-file. Use the DIME checklists and audit script as the source of checks. Don't commit.
+
 /pstack:poteto-mode Table 2 col 3 went from 0.124 to 0.091 after the 2025 data refresh. Reproduce on both vintages, split the change into sample composition versus variable definitions, and find the first step where they diverge. Do not change any specifications.
 
 /pstack:poteto-mode Refactor code/03_analysis/. Pin current outputs first. Target: one sample and spec registry. Results must match to within 1e-8.
