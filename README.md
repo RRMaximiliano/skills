@@ -53,6 +53,17 @@ are optional.
 - Filing downloaded papers into my Zotero library: `zotero-import`
 - Sleeping the Mac after my T3 Code threads finish: `sleep-when-done`
 
+## Research Guardrails and pstack
+
+For agent-assisted research work I also use
+[pstack](https://github.com/cursor/plugins/tree/main/pstack). This repo does
+not copy pstack skills. It adds only what pstack lacks:
+
+- `rules/research-guardrails.md`: always-on rules for research code, loaded
+  from `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`.
+- `docs/pstack-for-economics.md`: which pstack skill to use at each pipeline
+  stage, the verification layers for a research project, and recipes.
+
 ## Maintenance
 
 - Keep `description` under 180 characters.
