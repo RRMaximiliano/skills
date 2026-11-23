@@ -88,9 +88,22 @@ def has_nearby_check(lines: list[str], index: int, window: int = 12) -> bool:
     return any(token in nearby for token in ("isid ", "assert ", "iesave "))
 
 
+def has_nearby_sort(lines: list[str], index: int, window: int = 12) -> bool:
+    start = max(0, index - window)
+    nearby = "\n".join(normalized(line) for line in lines[start:index])
+    return re.search(r"(^|\n)\s*g?sort\s+", nearby) is not None
+
+
+def saves_to_tempfile(text: str) -> bool:
+    return re.match(r"^save\s+\"?`\w+'\"?\s*(,|$)", text) is not None
+
+
 def audit_file(path: Path, root: Path) -> list[Finding]:
     findings: list[Finding] = []
     lines = read_lines(path)
+    file_text = "\n".join(normalized(line) for line in lines)
+    file_has_cf = re.search(r"(^|\n)\s*(qui(etly)?\s+|cap(ture)?\s+|noi(sily)?\s+)*cf\s+", file_text) is not None
+    datasignature_flagged = False  # one lead per file is enough
 
     for i, line in enumerate(lines, start=1):
         text = normalized(line)
@@ -169,6 +182,47 @@ def audit_file(path: Path, root: Path) -> list[Finding]:
                     "`save` appears without a nearby `isid`, `assert`, or `iesave` check.",
                     "Check unique IDs and key invariants before saving important datasets.",
                 )
+
+        if re.search(r"^save\s+", text) and not saves_to_tempfile(text):
+            if not has_nearby_sort(lines, i - 1):
+                add(
+                    findings,
+                    "P3",
+                    "save-without-nearby-sort",
+                    path,
+                    root,
+                    i,
+                    "`save` appears without a nearby `sort`; Stata breaks sort ties randomly, so row order can change between runs.",
+                    "Run `isid <key>` then `sort <key>` on the unique key right before saving.",
+                )
+
+        compares_signature = re.search(r"\bdatasignature\s+confirm\b", text) or re.search(
+            r"r\(datasignature\)['\"]*\s*[!=]=|[!=]=\s*\"?`r\(datasignature\)", text
+        )
+        if compares_signature and not file_has_cf and not datasignature_flagged:
+            datasignature_flagged = True
+            add(
+                findings,
+                "P3",
+                "datasignature-only-comparison",
+                path,
+                root,
+                i,
+                "`datasignature` checksums columns separately and misses reordered rows or values swapped between rows.",
+                "To prove datasets are identical, sort on the unique key and add `cf _all using`, or compare a row hash.",
+            )
+
+        if re.search(r":\s*list\s+.+===", text):
+            add(
+                findings,
+                "P3",
+                "list-equality-ignores-order",
+                path,
+                root,
+                i,
+                "`: list A === B` ignores element order, so it cannot detect reordered variables.",
+                "Compare the lists as strings when order matters.",
+            )
 
         prior_context = "\n".join(normalized(x) for x in lines[max(0, i - 8): i - 1])
         if re.search(r"\bdrop\s+if\b", text) and not re.search(r"\bcount\s+if\b", prior_context):

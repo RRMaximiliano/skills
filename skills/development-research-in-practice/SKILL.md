@@ -33,7 +33,8 @@ Use R when requested.
 - One entry point runs after one root/config edit.
 - Dependencies are installed, bundled, or exposed up front.
 - `ieboilstart` is followed by `` `r(version)' ``.
-- IDs are checked before merges/saves.
+- IDs are checked before merges/saves, and saved data is sorted on its
+  unique key.
 - Cleaning, construction, and analysis are separated when useful.
 - Merges, appends, duplicates, drops, recodes, imputation, winsorization, and
   samples are justified.

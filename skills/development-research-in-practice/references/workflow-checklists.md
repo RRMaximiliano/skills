@@ -17,7 +17,10 @@ Check for:
 - `isid` or equivalent uniqueness checks before merges and saves.
 - Tidy data: one row per observation, one column per variable, one unit of
   observation per dataset.
-- Stable sorting before operations that depend on order.
+- Stable sorting before operations that depend on order, and datasets sorted
+  on their unique key before every save.
+- Two runs from raw produce identical datasets and outputs, checked with `cf`
+  after sorting on the key or with a row hash, not with `datasignature` alone.
 - No PII in analysis-ready or review-package data unless the task explicitly
   concerns confidential workflows.
 
@@ -28,6 +31,8 @@ Cleaning code should:
 - Start from raw or deidentified raw data and create cleaned data.
 - Document corrections with a codebook, correction file, or explicit code.
 - Preserve enough traceability to understand why observations or values changed.
+- Count every dropped observation and record its reason, so raw N minus
+  documented drops equals clean N.
 - Label variables and values consistently.
 - Use extended missing values where meaningful, such as "do not know" or
   "refused".

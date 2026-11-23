@@ -173,6 +173,31 @@ Avoid:
 
 Use `tempfile` for intermediate data that is not a workflow artifact.
 
+## Sorting, Comparisons, and Determinism
+
+Stata traps that break reproducibility without any error:
+
+- `sort` breaks ties randomly. A file whose last sort key has ties (for
+  example `school_id` in a student file) can change row order whenever any
+  upstream code adds or removes a sort, even `isid`. Sort on the unique key
+  before every save:
+
+  ```stata
+  isid student_id
+  sort student_id
+  save "${constructed}/panel_students.dta", replace
+  ```
+
+- `datasignature` checksums each column separately. It misses reordered rows
+  and values swapped between rows, which is what a bad merge produces. To
+  prove two datasets are identical, sort both on the unique key and run
+  `cf _all using`, or compare a row-sensitive hash.
+- `: list A === B` ignores order. To check that variable order is unchanged,
+  compare the variable lists as strings.
+- Stata batch mode (`stata -b do`) exits 0 even when the do-file fails.
+  Decide whether a run succeeded by reading the log for `r(` errors or an
+  explicit completion line.
+
 ## Outputs
 
 - Export outputs by code with `replace`.

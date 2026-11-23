@@ -46,6 +46,19 @@ Use when the task is the Beamer slide container:
 - Appendix navigation buttons.
 - Slide wrappers for imported tables and figures.
 
+## Hand Off To pstack
+
+When pstack is installed, use its skills for these jobs instead of extending
+this one. `docs/pstack-for-economics.md` in this repository has the details.
+
+- Verifying a whole pipeline (step ledgers, reference outputs, determinism):
+  `create-verification-skill`, using `workflow-checklists.md` and
+  `scripts/audit_stata_project.py` as the source of checks.
+- Turning recurring code mistakes into checks that fail loudly: `correct`.
+- Referee-style review of identification or specifications: `interrogate`.
+- Explaining why a number changed: `poteto-mode`, which applies
+  `principle-explain-the-number`.
+
 ## Mixed Tasks
 
 For mixed tasks, apply skills by layer:
