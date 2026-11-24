@@ -4,12 +4,16 @@
 Talks only to the local Zotero desktop app:
   - reads a *copy* of zotero.sqlite (never the live file) for collections and duplicate checks
   - writes through Zotero's connector endpoints on localhost:23119 (what "Save to Zotero" uses)
+  - adds items to extra collections through Zotero's local API (/api/), which must be enabled in
+    Settings → Advanced and authorized once; the key is kept in KEY_FILE
 
 Commands:
-  collections                         collection tree with connector ids (C<n>) and item counts
-  peek C<n> [--limit N]               recent item titles in one collection (to judge fit)
-  search --title "..." [--doi ...]    look for duplicates already in the library
-  import PDF --collection C<n>        save PDF into that collection and let Zotero fetch metadata
+  collections                              collection tree with connector ids (C<n>) and item counts
+  peek C<n> [--limit N]                    recent item titles in one collection (to judge fit)
+  search --title "..." [--doi ...]         look for duplicates already in the library
+  import PDF --collection C<n> [C<m> ...]  save PDF into the first collection, let Zotero fetch
+                                           metadata, then add the item to the other collections
+  add ITEMKEY --collection C<n> [C<m> ...] add an existing item to more collections
 """
 import argparse
 import atexit
@@ -33,6 +37,11 @@ from pathlib import Path
 BASE = "http://localhost:23119"
 DATA_DIR = Path(os.environ.get("ZOTERO_DATA_DIR", str(Path.home() / "Zotero")))
 SKIP_TYPES = "('attachment','note','annotation')"
+KEY_FILE = Path.home() / "Library" / "Application Support" / "zotero-import" / "local-api-key"
+APP_NAME = "zotero-import (Claude Code)"
+ENABLE_HINT = ("Zotero's local API is off. Turn on Zotero → Settings → Advanced → "
+               "\"Allow other applications on this computer to communicate with Zotero\", "
+               "then run `add <item key> --collection ...` for the missing collections.")
 
 
 # ---------- Zotero connection ----------
@@ -62,6 +71,68 @@ def ensure_running():
 
 def selected():
     return post("/connector/getSelectedCollection")[1]
+
+
+# ---------- local API (for edits the connector cannot make) ----------
+
+class LocalAPIError(Exception):
+    pass
+
+
+def api(method, path, body=None, headers=None, timeout=30):
+    """Call the local API; return (status, headers, text) without raising on HTTP errors."""
+    data = json.dumps(body).encode() if body is not None else None
+    h = {"Content-Type": "application/json"} if data is not None else {}
+    h.update(headers or {})
+    req = urllib.request.Request(BASE + path, data=data, headers=h, method=method)
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return r.status, r.headers, r.read().decode()
+    except urllib.error.HTTPError as e:
+        return e.code, e.headers, e.read().decode(errors="replace")
+
+
+def api_key(renew=False):
+    if KEY_FILE.exists() and not renew:
+        return KEY_FILE.read_text().strip()
+    print("Waiting for you to click \"Always Allow\" in Zotero…", file=sys.stderr)
+    status, _, text = api("POST", "/api/local/authorize", {"appName": APP_NAME}, timeout=600)
+    if status != 200:
+        raise LocalAPIError(f"Zotero did not authorize {APP_NAME} (HTTP {status}: {text[:200]})")
+    d = json.loads(text)
+    if d.get("remember"):
+        KEY_FILE.parent.mkdir(parents=True, exist_ok=True)
+        fd = os.open(KEY_FILE, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w") as f:
+            f.write(d["key"])
+    return d["key"]
+
+
+def add_to_collections(prefix, item_key, coll_keys):
+    """Add the item to each collection key, keeping the collections it already has."""
+    status, h, text = api("GET", f"/api/{prefix}/items/{item_key}")
+    if status == 403 and "not enabled" in text:
+        raise LocalAPIError(ENABLE_HINT)
+    if status != 200:
+        raise LocalAPIError(f"could not read item {item_key} (HTTP {status}: {text[:200]})")
+    j = json.loads(text)
+    current = j["data"].get("collections", [])
+    wanted = current + [k for k in coll_keys if k not in current]
+    if wanted == current:
+        return
+    renew = False
+    for _ in range(2):
+        status, _, text = api("PATCH", f"/api/{prefix}/items/{item_key}", {"collections": wanted}, {
+            "Zotero-API-Key": api_key(renew),
+            "Zotero-Server-ID": h["Zotero-Server-ID"],
+            "If-Unmodified-Since-Version": str(j["version"]),
+        })
+        if status != 401:
+            break
+        KEY_FILE.unlink(missing_ok=True)  # key revoked or single-use: ask again once
+        renew = True
+    if status not in (200, 204):
+        raise LocalAPIError(f"Zotero refused the collection change (HTTP {status}: {text[:200]})")
 
 
 # ---------- read-only database snapshot ----------
@@ -184,16 +255,73 @@ def cmd_search(a):
     print(json.dumps({"matches": out}, indent=1, ensure_ascii=False))
 
 
-def select_url(con, target):
-    if not target.startswith("C"):
-        sys.exit("ERROR: --collection must be a collection id like C3 (from `collections`).")
-    r = con.execute("select key, libraryID from collections where collectionID=?", (int(target[1:]),)).fetchone()
-    if not r:
-        sys.exit(f"ERROR: no collection {target}")
-    key, lib = r
-    g = con.execute("select groupID from groups where libraryID=?", (lib,)).fetchone()
-    return (f"zotero://select/groups/{g[0]}/collections/{key}" if g
-            else f"zotero://select/library/collections/{key}")
+def resolve_collections(con, targets):
+    """Validate C<n> ids (repeated or comma-separated) and return their details, in order."""
+    ids = []
+    for t in targets:
+        for c in t.split(","):
+            c = c.strip()
+            if c and c not in ids:
+                ids.append(c)
+    out = []
+    for c in ids:
+        if not re.fullmatch(r"C\d+", c):
+            sys.exit(f"ERROR: {c!r} is not a collection id like C3 (from `collections`).")
+        r = con.execute("select collectionID, key, collectionName, libraryID from collections "
+                        "where collectionID=?", (int(c[1:]),)).fetchone()
+        if not r:
+            sys.exit(f"ERROR: no collection {c}")
+        cid, key, name, lib = r
+        g = con.execute("select groupID from groups where libraryID=?", (lib,)).fetchone()
+        out.append({"id": c, "num": cid, "key": key, "name": name, "library": lib,
+                    "prefix": f"groups/{g[0]}" if g else "users/0",
+                    "url": (f"zotero://select/groups/{g[0]}/collections/{key}" if g
+                            else f"zotero://select/library/collections/{key}")})
+    if len({c["library"] for c in out}) > 1:
+        sys.exit("ERROR: all collections must be in the same library. Nothing changed.")
+    return out
+
+
+def add_extra(item_key, colls):
+    """Add the item to colls; return an error message, or None on success."""
+    if not colls:
+        return None
+    try:
+        add_to_collections(colls[0]["prefix"], item_key, [c["key"] for c in colls])
+    except LocalAPIError as e:
+        return str(e)
+
+
+def not_in(con, item_key, colls):
+    """The collections in colls that the item is not in yet (by id: names repeat, e.g. "Class 1")."""
+    have = {n for (n,) in con.execute(
+        """select ci.collectionID from collectionItems ci join items i using(itemID)
+           where i.key=? and i.libraryID=?""", (item_key, colls[0]["library"]))}
+    return [c for c in colls if c["num"] not in have]
+
+
+def collection_report(con, item_key, colls, error):
+    iid = con.execute("select itemID from items where key=? and libraryID=?",
+                      (item_key, colls[0]["library"])).fetchone()[0]
+    item = summary(con, iid)
+    missing = [c["id"] for c in not_in(con, item_key, colls)]
+    rep = {"ok": not missing, "target_collections": [c["name"] for c in colls],
+           "missing_collections": missing}
+    if error:
+        rep["collection_error"] = error
+    return item, rep
+
+
+def cmd_add(a):
+    ensure_running()
+    colls = resolve_collections(db(), a.collection)
+    con = db()
+    if not con.execute("select 1 from items where key=? and libraryID=?",
+                       (a.item, colls[0]["library"])).fetchone():
+        sys.exit(f"ERROR: no item {a.item} in the library that holds {colls[0]['id']}")
+    error = add_extra(a.item, not_in(con, a.item, colls))
+    item, rep = collection_report(db(), a.item, colls, error)
+    print(json.dumps({**rep, "item": item}, indent=1, ensure_ascii=False))
 
 
 def cmd_import(a):
@@ -201,17 +329,19 @@ def cmd_import(a):
     if not pdf.is_file() or pdf.suffix.lower() != ".pdf":
         sys.exit(f"ERROR: not a PDF file: {pdf}")
     ensure_running()
-    target_id = int(a.collection.lstrip("C"))
+    colls = resolve_collections(db(), a.collection)
+    first = colls[0]
+    target_id = first["num"]
 
-    # 1. make the target collection the selected one, so the save lands there
-    subprocess.run(["open", "-g", select_url(db(), a.collection)])
+    # 1. make the first target collection the selected one, so the save lands there
+    subprocess.run(["open", "-g", first["url"]])
     for _ in range(20):
         d = selected()
         if d.get("id") == target_id and d.get("name") != d.get("libraryName"):
             break
         time.sleep(0.5)
     else:
-        sys.exit(f"ERROR: could not select {a.collection} in Zotero (selected: {d.get('name')}). Nothing imported.")
+        sys.exit(f"ERROR: could not select {first['id']} in Zotero (selected: {d.get('name')}). Nothing imported.")
     if not d.get("filesEditable", True):
         sys.exit(f"ERROR: files are not editable in {d.get('name')}. Nothing imported.")
 
@@ -244,13 +374,15 @@ def cmd_import(a):
     if not row:
         sys.exit("ERROR: save reported success but the new attachment was not found in the database.")
     att_id, parent_id = row
-    item = summary(con, parent_id or att_id)
-    want = d["name"]
-    missing = [k for k in ("year", "publication", "DOI") if not item.get(k)]
     att_key = con.execute("select key from items where itemID=?", (att_id,)).fetchone()[0]
+    item_key = con.execute("select key from items where itemID=?", (parent_id or att_id,)).fetchone()[0]
+
+    # 4. add the top-level item to the remaining collections, then re-read
+    error = add_extra(item_key, not_in(con, item_key, colls))
+    item, rep = collection_report(db(), item_key, colls, error)
+    missing = [k for k in ("year", "publication", "DOI") if not item.get(k)]
     print(json.dumps({
-        "ok": want in item["collections"],
-        "target_collection": want,
+        **rep,
         "recognized": bool(parent_id),
         "stored": any((DATA_DIR / "storage" / att_key).glob("*.pdf")),
         "item": item,
@@ -265,9 +397,13 @@ def main():
     sp.add_parser("collections")
     q = sp.add_parser("peek"); q.add_argument("collection"); q.add_argument("--limit", type=int, default=12)
     q = sp.add_parser("search"); q.add_argument("--title"); q.add_argument("--doi")
-    q = sp.add_parser("import"); q.add_argument("pdf"); q.add_argument("--collection", required=True); q.add_argument("--title")
+    q = sp.add_parser("import"); q.add_argument("pdf"); q.add_argument("--title")
+    q.add_argument("--collection", required=True, nargs="+", action="extend")
+    q = sp.add_parser("add"); q.add_argument("item")
+    q.add_argument("--collection", required=True, nargs="+", action="extend")
     a = p.parse_args()
-    {"collections": cmd_collections, "peek": cmd_peek, "search": cmd_search, "import": cmd_import}[a.cmd](a)
+    {"collections": cmd_collections, "peek": cmd_peek, "search": cmd_search,
+     "import": cmd_import, "add": cmd_add}[a.cmd](a)
 
 
 if __name__ == "__main__":

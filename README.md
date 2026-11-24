@@ -36,9 +36,10 @@ are optional.
 - `tfhandout`: TF reading handouts in my first-person teaching voice, typeset
   with the bundled `tfhandout.sty` package (XeLaTeX, Minion Pro, US Letter),
   R-generated tables, and plain-language figure notes.
-- `zotero-import`: files downloaded PDFs into the right collection of my local
-  Zotero library after I confirm, checks for duplicates, and offers to move the
-  downloaded copies to the Trash. Uses only Zotero's local connector.
+- `zotero-import`: files downloaded PDFs into one or more collections of my
+  local Zotero library after I confirm, checks for duplicates, and offers to
+  move the downloaded copies to the Trash. Saves through Zotero's local
+  connector; filing in extra collections needs Zotero's local API turned on.
 - `sleep-when-done`: watches every running T3 Code thread and puts the Mac to
   sleep once all are finished, ending any Amphetamine session first. Run it
   from a no-project thread.
